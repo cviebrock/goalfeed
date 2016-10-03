@@ -9,6 +9,8 @@ use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Curl;
 use Symfony\Component\Console\Output\OutputInterface;
+use App\Message;
+use App\Jobs\MessageSender;
 
 class GameListener extends Command
 {
@@ -26,8 +28,8 @@ class GameListener extends Command
      */
     protected $description = 'listens';
 
-	public $homeTeamGoals = 0;
-	public $awayTeamGoals = 0;
+	public $homeTeamGoals = false;
+	public $awayTeamGoals = false;
 
 	public $homeTeam;
 	public $awayTeam;
@@ -60,39 +62,36 @@ class GameListener extends Command
 		$gameActive = true;
 		$this->date = Carbon::createFromTimestamp($this->game->start_time, 'America/Toronto');
 
+		try {
 
-	    $firstrun = true;
-
-
-		try{
-
-			while($gameActive == true){
+			while ($gameActive == true) {
 
 				$response = Curl::to($gameUrl)->get();
 
-				if($response){
+				if ($response) {
 					$scoreboard = EngineMiscFunctions::jsonp_decode($response);
 
+					if ($scoreboard) {
+						if ($this->homeTeamGoals === false || $this->awayTeamGoals === false) {
+							$this->homeTeam = Team::whereTeamCode($scoreboard->h->ab)->first();
+							$this->awayTeam = Team::whereTeamCode($scoreboard->a->ab)->first();
 
-					if($firstrun){
-						$this->homeTeam = Team::whereTeamCode($scoreboard->h->ab)->first();
-						$this->awayTeam = Team::whereTeamCode($scoreboard->a->ab)->first();
+							$this->homeTeamGoals = $scoreboard->h->tot->g;
+							$this->awayTeamGoals = $scoreboard->a->tot->g;
+						}
 
-						$this->homeTeamGoals = $scoreboard->h->tot->g;
-						$this->awayTeamGoals = $scoreboard->a->tot->g;
-						$firstrun = false;
+						$this->checkForGoals($scoreboard);
+
+						if ($scoreboard->p > 2 && $scoreboard->sr == 0) {
+							$gameActive = $this->checkGameOver();
+						}
+						sleep(1);
 					}
-
-					$this->checkForGoals($scoreboard);
-
-					if($scoreboard->p > 2 && $scoreboard->sr == 0 ) {
-						$gameActive = $this->checkGameOver();
-					}
-					///$this->output('check');
 				}
-				sleep(1);
 			}
+
 		}catch (Exception $e){
+
 			$this->output->writeln($e->getLine());
 		}
 
@@ -117,6 +116,8 @@ class GameListener extends Command
     	//todo
 	    $teamname = $team->team_name;
 	    $this->output->writeln("Goal $teamname");
+	    $message = new Message($team->team_code);
+	    dispatch(new MessageSender($message));
 
     }
 
