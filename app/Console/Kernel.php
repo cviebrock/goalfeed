@@ -13,7 +13,9 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-    	'App\Console\Commands\GetGamesForDate'
+    	'App\Console\Commands\GetGamesForDate',
+	    'App\Console\Commands\GameListener',
+	    'App\Console\Commands\sendTestEvent'
         //d
     ];
 

@@ -63,7 +63,7 @@ class GetGamesForDate extends Command
 
 		    if($response){
 
-			    $scoreboard = $this->jsonp_decode($response, false);
+			    $scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
 
 			    foreach ($scoreboard->games as $game){
 				    $homeTeam = Team::firstOrCreate(['team_code' => $game->hta, 'team_name' => ucwords(strtolower($game->htn . ' ' . $game->htcommon))]);
@@ -87,14 +87,4 @@ class GetGamesForDate extends Command
 
 
     }
-
-	private function jsonp_decode($jsonp, $assoc = false) { // PHP 5.3 adds depth as third parameter to json_decode
-
-		$jsonp = substr($jsonp, strpos($jsonp, '('));
-		$jsonp = str_replace('&quot;', '"', $jsonp);
-		$jsonp = trim(trim($jsonp),'()');
-		$jsonp = json_decode($jsonp, $assoc);
-
-		return $jsonp;
-	}
 }
