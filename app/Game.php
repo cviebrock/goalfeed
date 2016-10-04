@@ -19,9 +19,15 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereUpdatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereStartTime($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereGameCode($value)
+ * @property string $listener_status
+ * @method static \Illuminate\Database\Query\Builder|\App\Game whereListenerStatus($value)
  */
 class Game extends Model
 {
+	const GAME_LISTENER_STATUS_IDLE = 'idle';
+	const GAME_LISTENER_STATUS_WAITING = 'waiting';
+	const GAME_LISTENER_STATUS_ACTIVE = 'active';
+	const GAME_LISTENER_STATUS_DONE = 'done';
 	//
 	protected $fillable = ['game_code','start_time'];
 
