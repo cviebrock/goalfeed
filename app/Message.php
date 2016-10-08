@@ -41,7 +41,7 @@ class Message
 	public function toMessageJson(){
 
 		$message = [
-			'payload' => $this->payload
+			'team' => $this->payload
 		];
 
 		return json_encode($message);
