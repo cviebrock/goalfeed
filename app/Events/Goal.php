@@ -18,7 +18,7 @@ class Goal
      *
      * @return void
      */
-	public $team = "WPG";
+	public $team;
 
 	public function __construct()
     {

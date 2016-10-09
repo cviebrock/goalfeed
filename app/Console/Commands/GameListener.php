@@ -59,10 +59,25 @@ class GameListener extends Command
 
 	    $this->game = Game::whereGameCode($this->argument("game_code"))->first();
 	    $gameUrl = 'http://live.nhle.com/GameData/20162017/' . $this->game->game_code . '/gc/gcsb.jsonp';
-		$gameActive = true;
+		$gameActive = false;
+
+	    $this->game->listener_status = Game::GAME_LISTENER_STATUS_WAITING;
+	    $this->game->save();
+
 		$this->date = Carbon::createFromTimestamp($this->game->start_time, 'America/Toronto');
 
 		try {
+
+			while ($gameActive == false) {
+				//don't flood nhl with requests before the game is about to start
+				if(time() >= $this->game->start_time - 90 ){
+					$this->game->listener_status = Game::GAME_LISTENER_STATUS_ACTIVE;
+					$this->game->save();
+					$gameActive = true;
+				} else {
+					sleep(60);
+				}
+			}
 
 			while ($gameActive == true) {
 
@@ -95,6 +110,8 @@ class GameListener extends Command
 			$this->output->writeln($e->getLine());
 		}
 
+		$this->game->listener_status = Game::GAME_LISTENER_STATUS_DONE;
+	    $this->game->save();
     }
 
     public function checkForGoals($scoreboard){
@@ -113,7 +130,7 @@ class GameListener extends Command
     }
 
     public function goal(Team $team){
-    	//todo
+
 	    $teamname = $team->team_name;
 	    $this->output->writeln("Goal $teamname");
 	    $message = new Message($team->team_code);
@@ -123,9 +140,7 @@ class GameListener extends Command
 
     public function checkGameOver() {
 
-    	return false;
-
-/*	    $scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $this->date->toDateString() .".jsonp";
+	    $scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $this->date->toDateString() .".jsonp";
 
 	    $response = Curl::to($scoreboardURL)->get();
 
@@ -133,11 +148,15 @@ class GameListener extends Command
 
 		    $scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
 
-		    foreach ($scoreboard->games as $chkGame) {
+		    if($scoreboard){
+				foreach ($scoreboard->games as $chkGame) {
+					if($chkGame->id == $this->game->game_code && str_contains(strtolower($chkGame->bsc),'final')){
+						return true;
+					}
+				}
+			}
+	    }
 
-
-		    }
-	    }*/
-
-	}
+	    return false;
+    }
 }

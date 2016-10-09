@@ -58,7 +58,7 @@ class GetGamesForDate extends Command
 
 	    while($daysProcessed < $days){
 		    $scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $date->toDateString() .".jsonp";
-
+			$this->output->writeln($scoreboardURL);
 		    $response = Curl::to($scoreboardURL)->get();
 
 		    if($response){
