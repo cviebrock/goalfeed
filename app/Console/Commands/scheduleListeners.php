@@ -44,7 +44,6 @@ class scheduleListeners extends Command
 							->where('listener_status', '=', Game::GAME_LISTENER_STATUS_IDLE)
 							->get();
 
-
 	    foreach ($gamesToStart as $game){
 			$command = 'nhl:game-listener ' . $game->game_code;
 	    	call_in_background($command);
