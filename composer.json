@@ -10,7 +10,8 @@
         "ixudra/curl": "6.*",
         "barryvdh/laravel-ide-helper": "^2.2",
         "pusher/pusher-php-server": "^2.6",
-        "illuminated/helper-functions": "^1.0"
+        "illuminated/helper-functions": "^1.0",
+        "rcrowe/twigbridge": "^0.9.3"
     },
     "require-dev": {
         "fzaninotto/faker": "~1.4",
