@@ -91,6 +91,7 @@ class GameListener extends Command
 							$this->homeTeam = Team::whereTeamCode($scoreboard->h->ab)->first();
 							$this->awayTeam = Team::whereTeamCode($scoreboard->a->ab)->first();
 
+							$this->output->writeln("Game started");
 							$this->homeTeamGoals = $scoreboard->h->tot->g;
 							$this->awayTeamGoals = $scoreboard->a->tot->g;
 						}
@@ -151,6 +152,7 @@ class GameListener extends Command
 		    if($scoreboard){
 				foreach ($scoreboard->games as $chkGame) {
 					if($chkGame->id == $this->game->game_code && str_contains(strtolower($chkGame->bsc),'final')){
+						$this->output->writeln("Game over");
 						return true;
 					}
 				}
