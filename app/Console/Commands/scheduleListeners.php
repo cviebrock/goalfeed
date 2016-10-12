@@ -40,7 +40,7 @@ class scheduleListeners extends Command
     {
         //
 		$gamesToStart = Game::where('start_time', '>', time() )
-							->where('start_time', '<=', time() + 86400 )
+							->where('start_time', '<=', time() + 3660 )
 							->where('listener_status', '=', Game::GAME_LISTENER_STATUS_IDLE)
 							->get();
 
