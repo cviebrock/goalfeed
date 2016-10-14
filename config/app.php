@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'url' => env('APP_URL', 'http://localhost'),
+    'url' => env('APP_URL', 'http://goalfeed.ca'),
 
     /*
     |--------------------------------------------------------------------------
@@ -167,12 +167,13 @@ return [
         /*
          * Package Service Providers...
          */
-
         //
+	    Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
 
-        /*
-         * Application Service Providers...
-         */
+
+	    /*
+		 * Application Service Providers...
+		 */
         App\Providers\AppServiceProvider::class,
         App\Providers\BroadcastServiceProvider::class,
         App\Providers\AuthServiceProvider::class,
@@ -226,6 +227,7 @@ return [
         'Validator' => Illuminate\Support\Facades\Validator::class,
         'View' => Illuminate\Support\Facades\View::class,
 	    'Curl' => Ixudra\Curl\Facades\Curl::class,
+	    'Bugsnag' => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
 
     ],
 
