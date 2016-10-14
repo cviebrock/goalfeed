@@ -17,6 +17,7 @@ class Kernel extends ConsoleKernel
 	    'App\Console\Commands\GameListener',
 	    'App\Console\Commands\sendTestEvent',
 	    'App\Console\Commands\scheduleListeners',
+	    'App\Console\Commands\ListenerSafetyNet',
         //d
     ];
 
@@ -28,9 +29,10 @@ class Kernel extends ConsoleKernel
      */
     protected function schedule(Schedule $schedule)
     {
-         $schedule->command('nhl:start-games')
-                  ->hourly();
+		$schedule->command('nhl:start-games')
+			->hourly();
 
+		$schedule->command('nhl:rescue-games')->everyFiveMinutes();
 
 
     }

@@ -24,6 +24,9 @@ class AppServiceProvider extends ServiceProvider
     public function register()
     {
         //
+	    $this->app->alias('bugsnag.logger', \Illuminate\Contracts\Logging\Log::class);
+	    $this->app->alias('bugsnag.logger', \Psr\Log\LoggerInterface::class);
+
 	    if ($this->app->environment() !== 'production') {
 		    $this->app->register(\Barryvdh\LaravelIdeHelper\IdeHelperServiceProvider::class);
 	    }
