@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\MLB;
 
 use App\EngineMiscFunctions;
 use App\Game;
@@ -19,7 +19,7 @@ class GameListener extends Command
      *
      * @var string
      */
-    protected $signature = 'nhl:game-listener {game_code}';
+    protected $signature = 'mlb:game-listener {game_code}';
 
     /**
      * The console command description.
@@ -58,7 +58,7 @@ class GameListener extends Command
 	    $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
 	    $this->game = Game::whereGameCode($this->argument("game_code"))->first();
-	    $gameUrl = 'http://live.nhle.com/GameData/20162017/' . $this->game->game_code . '/gc/gcsb.jsonp';
+	    $gameUrl = 'http://gd2.mlb.com/components/game/mlb/' . $this->game->game_code . '/gc/gcsb.jsonp';
 		$gameActive = false;
 
 	    $this->game->listener_status = Game::GAME_LISTENER_STATUS_WAITING;
@@ -69,7 +69,7 @@ class GameListener extends Command
 		try {
 
 			while ($gameActive == false) {
-				//don't flood nhl with requests before the game is about to start
+				//don't flood mlb with requests before the game is about to start
 				if(time() >= $this->game->start_time - 90 ){
 					$this->game->listener_status = Game::GAME_LISTENER_STATUS_ACTIVE;
 					$this->game->save();
@@ -141,7 +141,7 @@ class GameListener extends Command
 
     public function checkGameOver() {
 
-	    $scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $this->date->toDateString() .".jsonp";
+	    $scoreboardURL = "http://live.mlbe.com/GameData/GCScoreboard/" . $this->date->toDateString() .".jsonp";
 
 	    $response = Curl::to($scoreboardURL)->get();
 

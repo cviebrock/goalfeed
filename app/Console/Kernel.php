@@ -13,11 +13,17 @@ class Kernel extends ConsoleKernel
      * @var array
      */
     protected $commands = [
-    	'App\Console\Commands\GetGamesForDate',
-	    'App\Console\Commands\GameListener',
-	    'App\Console\Commands\sendTestEvent',
-	    'App\Console\Commands\scheduleListeners',
-	    'App\Console\Commands\ListenerSafetyNet',
+    	'App\Console\Commands\NHL\GetGamesForDate',
+	    'App\Console\Commands\NHL\GameListener',
+	    'App\Console\Commands\NHL\sendTestEvent',
+	    'App\Console\Commands\NHL\scheduleListeners',
+	    'App\Console\Commands\NHL\ListenerSafetyNet',
+
+	    'App\Console\Commands\MLB\GetGamesForDate',
+	    'App\Console\Commands\MLB\GameListener',
+	    'App\Console\Commands\MLB\sendTestEvent',
+	    'App\Console\Commands\MLB\scheduleListeners',
+	    'App\Console\Commands\MLB\ListenerSafetyNet',
         //d
     ];
 

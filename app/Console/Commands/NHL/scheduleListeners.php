@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\NHL;
 
 use App\Game;
 use Illuminate\Console\Command;
@@ -39,8 +39,11 @@ class scheduleListeners extends Command
     public function handle()
     {
         //
+	    $nhl = League::whereShortName('NHL')->first();
+
 		$gamesToStart = Game::where('start_time', '>', time() )
 							->where('start_time', '<=', time() + 3660 )
+							->where('league_id', '=', $nhl->id)
 							->where('listener_status', '=', Game::GAME_LISTENER_STATUS_IDLE)
 							->get();
 

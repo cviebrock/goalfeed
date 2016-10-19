@@ -21,6 +21,9 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereGameCode($value)
  * @property string $listener_status
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereListenerStatus($value)
+ * @property integer $league_id
+ * @property-read \App\League $league
+ * @method static \Illuminate\Database\Query\Builder|\App\Game whereLeagueId($value)
  */
 class Game extends Model
 {
@@ -29,7 +32,7 @@ class Game extends Model
 	const GAME_LISTENER_STATUS_ACTIVE = 'active';
 	const GAME_LISTENER_STATUS_DONE = 'done';
 	//
-	protected $fillable = ['game_code','start_time'];
+	protected $fillable = ['game_code','start_time','league_id'];
 
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
@@ -37,5 +40,9 @@ class Game extends Model
 	public function teams()
 	{
 		return $this->belongsToMany('App\Team','game_team','game_id','team_id');
+	}
+
+	public function league(){
+		return $this->hasOne('App\League');
 	}
 }

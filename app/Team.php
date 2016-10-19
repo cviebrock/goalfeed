@@ -15,10 +15,13 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Team whereId($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Team whereTeamCode($value)
  * @method static \Illuminate\Database\Query\Builder|\App\Team whereTeamName($value)
+ * @property integer $league_id
+ * @property-read \App\League $league
+ * @method static \Illuminate\Database\Query\Builder|\App\Team whereLeagueId($value)
  */
 class Team extends Model
 {
-	protected $fillable = ['team_code','team_name'];
+	protected $fillable = ['team_code','team_name','league_id'];
 
 	public $timestamps = false;
 
@@ -29,5 +32,9 @@ class Team extends Model
 	public function games()
 	{
 		return $this->belongsToMany('App\Game', 'game_team', 'team_id', 'game_id');
+	}
+
+	public function league(){
+		return $this->hasOne('App\League');
 	}
 }

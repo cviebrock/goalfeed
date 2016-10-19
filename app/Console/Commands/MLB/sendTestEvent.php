@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\MLB;
 
 use App\Events\Goal;
 use App\Jobs\MessageSender;
@@ -14,7 +14,7 @@ class sendTestEvent extends Command
      *
      * @var string
      */
-    protected $signature = 'test:goal';
+    protected $signature = 'test:run';
 
     /**
      * The console command description.

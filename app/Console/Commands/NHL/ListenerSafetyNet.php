@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Console\Commands;
+namespace App\Console\Commands\NHL;
 
 use Bugsnag\BugsnagLaravel\Facades\Bugsnag;
 use Carbon\Carbon;
@@ -42,13 +42,14 @@ class ListenerSafetyNet extends Command
     public function handle()
     {
         //
-
+	    $nhl = League::whereShortName('NHL')->first();
 
 		$timeBack = time() - 9000;
 	    $timeAhead = time() + 1700;
 
 	    $gamesToRescue = Game::where('start_time','<', $timeAhead)
 		    ->where('start_time','>',$timeBack)
+		    ->where('league_id', '=', $nhl->id)
 		    ->whereNotIn('listener_status', [Game::GAME_LISTENER_STATUS_ACTIVE, Game::GAME_LISTENER_STATUS_WAITING])
 		    ->get();
 
