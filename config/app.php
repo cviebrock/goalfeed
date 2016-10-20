@@ -169,6 +169,7 @@ return [
          */
         //
 	    Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
+	    TwigBridge\ServiceProvider::class,
 
 
 	    /*
@@ -228,6 +229,7 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 	    'Curl' => Ixudra\Curl\Facades\Curl::class,
 	    'Bugsnag' => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
+	    'Twig' => TwigBridge\Facade\Twig::class,
 
     ],
 
