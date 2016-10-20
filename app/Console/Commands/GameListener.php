@@ -16,6 +16,7 @@ class GameListener extends Command
 {
 
 	const COOLDOWN_TIME = 600;
+	const LIVE_TIME = 9000;
 
 	public $homeTeamGoals = false;
 
@@ -106,7 +107,7 @@ class GameListener extends Command
 
 						$this->checkForGoals($scoreboard);
 
-						if ($scoreboard->p > 2 && $scoreboard->sr == 0) {
+						if (($scoreboard->p > 2 && $scoreboard->sr == 0) && ($this->game->start_time + self::LIVE_TIME <= time())) {
 							$gameActive = !$this->isGameOver();
 						}
 						sleep(1);
@@ -115,8 +116,9 @@ class GameListener extends Command
 			}
 
 		}catch (Exception $e){
-
-			$this->output->writeln($e->getLine());
+			Bugsnag::notifyError('Game Listener Exception', 'A game listener failed');
+			$this->game->listener_status = Game::GAME_LISTENER_STATUS_IDLE;
+			$this->game->save();
 		}
 
 		$this->game->listener_status = Game::GAME_LISTENER_STATUS_DONE;
