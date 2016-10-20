@@ -14,6 +14,23 @@ use App\Jobs\MessageSender;
 
 class GameListener extends Command
 {
+
+	const COOLDOWN_TIME = 600;
+
+	public $homeTeamGoals = false;
+
+	public $awayTeamGoals = false;
+
+	public $homeTeam;
+
+	public $awayTeam;
+
+	public $cooldownCounter;
+
+	public $date;
+
+	public $game;
+
     /**
      * The name and signature of the console command.
      *
@@ -27,16 +44,6 @@ class GameListener extends Command
      * @var string
      */
     protected $description = 'listens';
-
-	public $homeTeamGoals = false;
-	public $awayTeamGoals = false;
-
-	public $homeTeam;
-	public $awayTeam;
-
-	public $date;
-	public $game;
-
 
     /**
      * Create a new command instance.
@@ -57,6 +64,7 @@ class GameListener extends Command
     {
 	    $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
 
+	    $this->cooldownCounter = self::COOLDOWN_TIME;
 	    $this->game = Game::whereGameCode($this->argument("game_code"))->first();
 	    $gameUrl = 'http://live.nhle.com/GameData/20162017/' . $this->game->game_code . '/gc/gcsb.jsonp';
 		$gameActive = false;
@@ -99,7 +107,7 @@ class GameListener extends Command
 						$this->checkForGoals($scoreboard);
 
 						if ($scoreboard->p > 2 && $scoreboard->sr == 0) {
-							$gameActive = $this->checkGameOver();
+							$gameActive = !$this->isGameOver();
 						}
 						sleep(1);
 					}
@@ -139,26 +147,39 @@ class GameListener extends Command
 
     }
 
-    public function checkGameOver() {
+	public function isGameOver() {
 
-	    $scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $this->date->toDateString() .".jsonp";
+		$gameIsOver = false;
+		if ($this->cooldownCounter > 0) {
 
-	    $response = Curl::to($scoreboardURL)->get();
+			$scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $this->date->toDateString() . ".jsonp";
 
-	    if($response) {
+			$response = Curl::to($scoreboardURL)->get();
 
-		    $scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
+			if ($response) {
 
-		    if($scoreboard){
-				foreach ($scoreboard->games as $chkGame) {
-					if($chkGame->id == $this->game->game_code && str_contains(strtolower($chkGame->bsc),'final')){
-						$this->output->writeln("Game over");
-						return true;
+				$scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
+
+				if ($scoreboard) {
+					foreach ($scoreboard->games as $chkGame) {
+						if ($chkGame->id == $this->game->game_code && str_contains(strtolower($chkGame->bsc), 'final')) {
+							$this->output->writeln("Game over - cooling down - " . $this->cooldownCounter);
+							$gameIsOver = true;
+						}
 					}
 				}
 			}
-	    }
 
-	    return false;
+			if ($gameIsOver) {
+				$this->cooldownCounter--;
+			} else {
+				$this->cooldownCounter = self::COOLDOWN_TIME;
+			}
+
+			return false;
+
+		} else {
+			return true;
+	    }
     }
 }
