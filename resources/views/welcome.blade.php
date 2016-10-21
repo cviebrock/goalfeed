@@ -1,7 +1,9 @@
-{% extends 'layouts/main.twig' %}
+@extends('layouts.main')
 
-
-{% block jumbotron %}
+<?php
+$showJumbotron = true;
+?>
+@section('jumbotron')
 	<div class="row text-center-xs text-left-md">
 		<div class="col-xs-12 col-md-3">
 			<div class="col-xs-4 col-xs-offset-4 col-md-offset-0 col-md-12">
@@ -17,9 +19,9 @@
 			</p>
 		</div>
 	</div>
-{% endblock %}
+@endsection
 
-{% block content %}
+@section('content')
 	<!-- Example row of columns -->
 	<div class="row">
 		<div class="col-md-6">
@@ -31,4 +33,4 @@
 			<p>We're working to add support for additional sports and leagues as well as clients for other platforms!</p>
 		</div>
 	</div>
-{% endblock %}
+@endsection

@@ -16,3 +16,6 @@ Route::get('/', function () {
 });
 
 Route::get('/get-teams','InfoController@getAllTeams');
+Auth::routes();
+
+Route::get('/home', 'HomeController@index');

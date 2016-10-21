@@ -1,18 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+	<?php
+	if (is_null($showJumbotron)) {
+		$showJumbotron = false;
+	}
+	?>
 	<meta charset="utf-8">
 	<meta http-equiv="X-UA-Compatible" content="IE=edge">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="csrf-token" content="{{ csrf_token() }}">
 	<!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
 	<meta name="description" content="">
 	<meta name="author" content="">
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
-	<style>
-
-	</style>
-	{#<style>
+	<script>
+		window.Laravel =; <?php echo json_encode([
+				'csrfToken' => csrf_token(),
+		]); ?>
+	</script>
+	{{--<style>
 		html, body {
 			background-color: #CC0000;
 			color: #636b6f;
@@ -88,7 +96,7 @@
 		.m-b-md {
 			margin-bottom: 30px;
 		}
-	</style>#}
+	</style>--}}
 	<title>Goalfeed.ca - Trigger Philips Hue lights when your favourite NHL team scores</title>
 	<!-- Custom styles for this template -->
 	<link href="css/jumbotron.css" rel="stylesheet">
@@ -120,23 +128,19 @@
 </head>
 
 <body>
-{% include 'partials/header/header.twig' %}
+@include('partials.header.header')
 
-{% set _jumbotron = block('jumbotron') %}
-{% if _jumbotron is not empty %}
-	<!-- Main jumbotron for a primary marketing message or call to action -->
+@if ($showJumbotron)
 	<div class="jumbotron">
 		<div class="container">
-			{{ _jumbotron|raw }}
+			@yield('jumbotron')
 		</div>
 	</div>
-{% endif %}
+@endif
 
 
 <div class="container">
-	{% block content %}{% endblock %}
-
-
+	@yield('content')
 	<hr>
 
 	<footer>
