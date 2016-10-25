@@ -21,6 +21,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereGameCode($value)
  * @property string $listener_status
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereListenerStatus($value)
+ * @property integer $league_id
+ * @method static \Illuminate\Database\Query\Builder|\App\Game whereLeagueId($value)
  */
 class Game extends Model
 {

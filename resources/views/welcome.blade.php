@@ -1,8 +1,5 @@
-@extends('layouts.main')
+@extends('layouts.main', ['jumbotron' => true])
 
-<?php
-$showJumbotron = true;
-?>
 @section('jumbotron')
 	<div class="row text-center-xs text-left-md">
 		<div class="col-xs-12 col-md-3">

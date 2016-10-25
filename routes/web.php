@@ -19,3 +19,5 @@ Route::get('/get-teams','InfoController@getAllTeams');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index');
+
+Route::get('/admin', 'AdminController@getAdminDash');
