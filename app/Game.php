@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -33,11 +34,23 @@ class Game extends Model
 	//
 	protected $fillable = ['game_code','start_time'];
 
+
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function teams()
 	{
 		return $this->belongsToMany('App\Team','game_team','game_id','team_id');
+	}
+
+	public function readableStartTime($locale = 'America/Winnipeg') {
+
+		$startTime = Carbon::createFromTimestampUTC($this->start_time);
+
+		$startTime->setTimezone($locale);
+
+		return $startTime->toDateTimeString();
+
+
 	}
 }

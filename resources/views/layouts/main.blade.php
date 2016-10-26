@@ -14,87 +14,11 @@ $showJumbo = isset($jumbotron) ? true : false;
 	<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 
 	<script>
-		window.Laravel =; <?php echo json_encode([
+        window.Laravel = <?php echo json_encode([
 				'csrfToken' => csrf_token(),
-		]); ?>
+        ]); ?>;
 	</script>
-	{{--<style>
-		html, body {
-			background-color: #CC0000;
-			color: #636b6f;
-			font-family: 'Raleway';
-			color: #fff;
-			font-weight: 100;
-			height: 100vh;
-			margin: 0;
-		}
 
-		.full-height {
-			height: 100vh;
-		}
-
-		.flex-center {
-			align-items: center;
-			display: flex;
-			justify-content: center;
-		}
-
-		.position-ref {
-			position: relative;
-		}
-
-		.top-right {
-			position: absolute;
-			right: 10px;
-			top: 18px;
-		}
-
-		.content {
-			text-align: center;
-		}
-
-		.title {
-			font-size: 84px;
-		}
-		.description {
-			color: #fff;
-			padding: 0 25px;
-			font-size: 1.25em;
-			font-weight: 600;
-			letter-spacing: .1rem;
-			text-decoration: none;
-			font-family: 'Lato';
-			/*text-transform: uppercase;*/
-		}
-		.description a {
-			color: #fff;
-			padding: 0 25px;
-			font-size: 1.25em;
-			font-weight: 600;
-			letter-spacing: .1rem;
-			text-decoration: underline;
-			font-family: 'Lato';
-
-		}
-
-
-		.links > a {
-			color: #636b6f;
-			padding: 0 25px;
-			font-size: 12px;
-			font-weight: 600;
-			letter-spacing: .1rem;
-			text-decoration: none;
-			text-transform: uppercase;
-		}
-		.header{
-			background: black;
-		}
-
-		.m-b-md {
-			margin-bottom: 30px;
-		}
-	</style>--}}
 	<title>Goalfeed.ca - Trigger Philips Hue lights when your favourite NHL team scores</title>
 	<!-- Custom styles for this template -->
 	<link href="css/jumbotron.css" rel="stylesheet">

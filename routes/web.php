@@ -21,3 +21,5 @@ Auth::routes();
 Route::get('/home', 'HomeController@index');
 
 Route::get('/admin', 'AdminController@getAdminDash');
+Route::get('/admin/start-listener/{gamecode}', 'AdminController@getStartListener');
+Route::get('/admin/game-status', 'AdminController@getGameStatus')->name('admin.game-status');
