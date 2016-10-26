@@ -24,7 +24,7 @@ class AdminController extends Controller {
 
 	public function getGameStatus() {
 
-		$timeBack = time() - 19000;
+		$timeBack = time() - 86400;
 		$games = Game::where('start_time', '>', $timeBack)
 			->orderBy('start_time', 'asc')
 			->limit(20)
