@@ -2,6 +2,7 @@
 
 namespace App;
 
+use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 /**
@@ -21,6 +22,8 @@ use Illuminate\Database\Eloquent\Model;
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereGameCode($value)
  * @property string $listener_status
  * @method static \Illuminate\Database\Query\Builder|\App\Game whereListenerStatus($value)
+ * @property integer $league_id
+ * @method static \Illuminate\Database\Query\Builder|\App\Game whereLeagueId($value)
  */
 class Game extends Model
 {
@@ -31,11 +34,23 @@ class Game extends Model
 	//
 	protected $fillable = ['game_code','start_time'];
 
+
 	/**
 	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
 	 */
 	public function teams()
 	{
 		return $this->belongsToMany('App\Team','game_team','game_id','team_id');
+	}
+
+	public function readableStartTime($locale = 'America/Winnipeg') {
+
+		$startTime = Carbon::createFromTimestampUTC($this->start_time);
+
+		$startTime->setTimezone($locale);
+
+		return $startTime->toDateTimeString();
+
+
 	}
 }

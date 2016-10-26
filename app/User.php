@@ -25,6 +25,8 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
  * @method static \Illuminate\Database\Query\Builder|\App\User whereRememberToken($value)
  * @method static \Illuminate\Database\Query\Builder|\App\User whereCreatedAt($value)
  * @method static \Illuminate\Database\Query\Builder|\App\User whereUpdatedAt($value)
+ * @property boolean $is_admin
+ * @method static \Illuminate\Database\Query\Builder|\App\User whereIsAdmin($value)
  */
 class User extends Authenticatable
 {
@@ -47,4 +49,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+
+	public function isAdmin() {
+
+		return $this->is_admin; // this looks for an admin column in your users table
+	}
 }
