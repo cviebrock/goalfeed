@@ -45,7 +45,7 @@ class GetGamesForDate extends Command
     {
         //
 
-		$days = $this->argument("days") ? $this->argument("days") : 7;
+	    $days = $this->argument("days") ? $this->argument("days") : 1;
 	    $offset = $this->argument("offset") ? $this->argument("offset") : 0;
 
 	    $date = Carbon::today();
