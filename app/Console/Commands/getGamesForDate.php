@@ -60,7 +60,6 @@ class GetGamesForDate extends Command
 
 	    while($daysProcessed < $days){
 		    $scoreboardURL = $urlRoot . "/api/v1/schedule?startDate=" . $date->format('Y-n-d') . "&endDate=" . $date->format('Y-n-d') ."&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.ticket,schedule.game.content.media.epg,schedule.radioBroadcasts,schedule.metadata,schedule.game.seriesSummary,seriesSummary.series&leaderCategories=&leaderGameTypes=R&site=en_nhlCA&teamId=&gameType=&timecode=";
-		    //$scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $date->toDateString() .".jsonp";
 			$this->output->writeln($scoreboardURL);
 		    $response = Curl::to($scoreboardURL)->get();
 
