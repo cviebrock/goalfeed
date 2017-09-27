@@ -48,6 +48,8 @@ class GetGamesForDate extends Command
 		$days = $this->argument("days") ? $this->argument("days") : 7;
 	    $offset = $this->argument("offset") ? $this->argument("offset") : 0;
 
+	    $urlRoot = "https://statsapi.web.nhl.com";
+
 	    $date = Carbon::today();
 	    $date->addDays($offset);
 	    $date->timezone('America/Toronto');
@@ -57,22 +59,23 @@ class GetGamesForDate extends Command
 	    $progress->start($days);
 
 	    while($daysProcessed < $days){
-		    $scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $date->toDateString() .".jsonp";
+		    $scoreboardURL = $urlRoot . "/api/v1/schedule?startDate=" . $date->format('Y-n-d') . "&endDate=" . $date->format('Y-n-d') ."&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.ticket,schedule.game.content.media.epg,schedule.radioBroadcasts,schedule.metadata,schedule.game.seriesSummary,seriesSummary.series&leaderCategories=&leaderGameTypes=R&site=en_nhlCA&teamId=&gameType=&timecode=";
+		    //$scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $date->toDateString() .".jsonp";
 			$this->output->writeln($scoreboardURL);
 		    $response = Curl::to($scoreboardURL)->get();
 
 		    if($response){
 
-			    $scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
+			    $scoreboard = json_decode($response, false);
+			    var_dump($scoreboard);
+			    foreach ($scoreboard->dates[0]->games as $game){
 
-			    foreach ($scoreboard->games as $game){
-				    $homeTeam = Team::firstOrCreate(['team_code' => $game->hta, 'team_name' => ucwords(strtolower($game->htn . ' ' . $game->htcommon))]);
-				    $awayTeam = Team::firstOrCreate(['team_code' => $game->ata, 'team_name' => ucwords(strtolower($game->atn . ' ' . $game->atcommon))]);
+				    //die();
+				    $homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name))]);
+				    $awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name))]);
 
-				    $startTime = $date;
-				    $startTime->setTimeFromTimeString(date("G:i", strtotime($game->bs)));
-
-				    $curGame = Game::firstOrCreate(['game_code' => $game->id,'start_time' => $startTime->timestamp]);
+				    $startTime = Carbon::parse($game->gameDate);
+				    $curGame = Game::firstOrCreate(['game_code' => $game->gamePk,'start_time' => $startTime->timestamp]);
 
 				    $homeTeam->games()->save($curGame);
 				    $awayTeam->games()->save($curGame);

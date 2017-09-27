@@ -67,7 +67,7 @@ class GameListener extends Command
 
 	    $this->cooldownCounter = self::COOLDOWN_TIME;
 	    $this->game = Game::whereGameCode($this->argument("game_code"))->first();
-	    $gameUrl = 'http://live.nhle.com/GameData/20162017/' . $this->game->game_code . '/gc/gcsb.jsonp';
+	    $gameUrl = 'http://live.nhle.com/GameData/20172018/' . $this->game->game_code . '/gc/gcsb.jsonp';
 		$gameActive = false;
 
 	    $this->game->listener_status = Game::GAME_LISTENER_STATUS_WAITING;
@@ -154,17 +154,17 @@ class GameListener extends Command
 		$gameIsOver = false;
 		if ($this->cooldownCounter > 0) {
 
-			$scoreboardURL = "http://live.nhle.com/GameData/GCScoreboard/" . $this->date->toDateString() . ".jsonp";
-
+			$urlRoot = "https://statsapi.web.nhl.com";
+			$scoreboardURL = $urlRoot . "/api/v1/schedule?startDate=" . $this->date->format('Y-n-d') . "&endDate=" . $this->date->format('Y-n-d') ."&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.game.content.media.epg&leaderCategories=&leaderGameTypes=R&site=en_nhlCA&teamId=&gameType=&timecode=";
 			$response = Curl::to($scoreboardURL)->get();
 
 			if ($response) {
 
-				$scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
+				$scoreboard = json_decode($response, false);
 
 				if ($scoreboard) {
-					foreach ($scoreboard->games as $chkGame) {
-						if ($chkGame->id == $this->game->game_code && str_contains(strtolower($chkGame->bsc), 'final')) {
+					foreach ($scoreboard->dates[0]->games as $chkGame) {
+						if ($chkGame->gamePk == $this->game->game_code && str_contains(strtolower($this->game->status->detailedState), 'final')) {
 							$this->output->writeln("Game over - cooling down - " . $this->cooldownCounter);
 							$gameIsOver = true;
 						}
