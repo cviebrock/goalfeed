@@ -68,17 +68,21 @@ class GetGamesForDate extends Command
 
 			    $scoreboard = json_decode($response, false);
 			    var_dump($scoreboard);
-			    foreach ($scoreboard->dates[0]->games as $game){
+			    if(!empty($scoreboard->dates)){
 
-				    //die();
-				    $homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name))]);
-				    $awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name))]);
+				    foreach ($scoreboard->dates[0]->games as $game){
 
-				    $startTime = Carbon::parse($game->gameDate);
-				    $curGame = Game::firstOrCreate(['game_code' => $game->gamePk,'start_time' => $startTime->timestamp]);
+					    //die();
+					    $homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name))]);
+					    $awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name))]);
 
-				    $homeTeam->games()->save($curGame);
-				    $awayTeam->games()->save($curGame);
+					    $startTime = Carbon::parse($game->gameDate);
+					    $curGame = Game::firstOrCreate(['game_code' => $game->gamePk,'start_time' => $startTime->timestamp]);
+
+					    $homeTeam->games()->save($curGame);
+					    $awayTeam->games()->save($curGame);
+				    }
+
 			    }
 		    }
 		    $date->addDay();
