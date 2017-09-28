@@ -181,6 +181,8 @@ return [
         App\Providers\EventServiceProvider::class,
         App\Providers\RouteServiceProvider::class,
 
+	    Superbalist\LaravelPubSub\PubSubServiceProvider::class,
+
     ],
 
     /*
@@ -229,6 +231,8 @@ return [
         'View' => Illuminate\Support\Facades\View::class,
 	    'Curl' => Ixudra\Curl\Facades\Curl::class,
 	    'Bugsnag' => Bugsnag\BugsnagLaravel\Facades\Bugsnag::class,
+
+	    'PubSub' => Superbalist\LaravelPubSub\PubSubFacade::class,
 
     ],
 

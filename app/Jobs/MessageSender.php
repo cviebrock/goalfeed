@@ -37,8 +37,17 @@ class MessageSender implements ShouldQueue
 	 */
 	public function handle()
 	{
+		$this->publishViaPusher();
+		$this->publishViaGoogle();
+	}
+	private function publishViaPusher() {
 		$pusher = new Pusher(env('PUSHER_KEY'), env('PUSHER_SECRET'), env('PUSHER_APP_ID'));
 
 		$pusher->trigger($this->channel, $this->messageType, $this->messageToSend);
+	}
+	private function publishViaGoogle() {
+		$pubsub = app('pubsub');
+		$pubsub->publish($this->channel, $this->messageToSend);
+
 	}
 }
