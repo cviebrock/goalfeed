@@ -37,8 +37,10 @@ class MessageSender implements ShouldQueue
 	 */
 	public function handle()
 	{
-		$pusher = new Pusher(env('PUSHER_KEY'), env('PUSHER_SECRET'), env('PUSHER_APP_ID'));
+		$pusher = new Pusher(env('PUSHER_KEY'), env('PUSHER_SECRET'), env('PUSHER_APP_ID'), [], env('PUSHER_APP_HOST'), 4567 );
 
-		$pusher->trigger($this->channel, $this->messageType, $this->messageToSend);
+		$ret = $pusher->trigger($this->channel, $this->messageType, $this->messageToSend);
+
+		$ret2 = false;
 	}
 }
