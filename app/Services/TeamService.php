@@ -8,8 +8,8 @@ class TeamService extends BaseService {
 
 	public static function isTeamAssignedToGame(Team $team, Game $game){
 
-		foreach ($game->teams() as $addedTeams) {
-			if ($addedTeams->team_code == $team->team_code){
+		foreach ($game->teams()->get() as $addedTeam) {
+			if ($addedTeam->team_code == $team->team_code){
 				return true;
 			}
 		}
