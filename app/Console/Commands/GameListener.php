@@ -164,7 +164,7 @@ class GameListener extends Command
 
 				if ($scoreboard) {
 					foreach ($scoreboard->dates[0]->games as $chkGame) {
-						if ($chkGame->gamePk == $this->game->game_code && str_contains(strtolower($this->game->status->detailedState), 'final')) {
+						if ($chkGame->gamePk == $this->game->game_code && str_contains(strtolower($chkGame->status->detailedState), 'final')) {
 							$this->output->writeln("Game over - cooling down - " . $this->cooldownCounter);
 							$gameIsOver = true;
 						}

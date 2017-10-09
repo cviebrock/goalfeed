@@ -5,6 +5,8 @@ namespace App\Http\Controllers;
 use App\Game;
 
 use Illuminate\Http\Request;
+use App\Message;
+use App\Jobs\MessageSender;
 
 use App\Http\Requests;
 
@@ -44,5 +46,10 @@ class AdminController extends Controller {
 			return redirect()->route('admin.game-status');
 		}
 
+	}
+
+	public function testGoal(){
+		$message = new Message('wpg');
+		dispatch(new MessageSender($message));
 	}
 }
