@@ -9,12 +9,14 @@ use Illuminate\Queue\SerializesModels;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Contracts\Queue\ShouldQueue;
 
-class MessageSender implements ShouldQueue
-{
+class MessageSender implements ShouldQueue {
+
 	use InteractsWithQueue, Queueable, SerializesModels;
 
 	protected $messageToSend;
+
 	protected $messageType;
+
 	protected $channel;
 
 
@@ -23,8 +25,8 @@ class MessageSender implements ShouldQueue
 	 *
 	 * @param Message $message
 	 */
-	public function __construct(Message $message)
-	{
+	public function __construct(Message $message) {
+
 		$this->channel = $message->channelId;
 		$this->messageType = $message->messageType;
 		$this->messageToSend = $message->toMessageJson();
@@ -35,12 +37,22 @@ class MessageSender implements ShouldQueue
 	 *
 	 * @return void
 	 */
-	public function handle()
-	{
-		$pusher = new Pusher(env('PUSHER_KEY'), env('PUSHER_SECRET'), env('PUSHER_APP_ID'), [], env('PUSHER_APP_HOST'), 4567 );
+	public function handle() {
+		$this->sendPusher();
+		$this->sendSlanger();
+	}
 
-		$ret = $pusher->trigger($this->channel, $this->messageType, $this->messageToSend);
+	private function sendPusher() {
 
-		$ret2 = false;
+		$pusher = new Pusher(env('PUSHER_KEY'), env('PUSHER_SECRET'), env('PUSHER_APP_ID'));
+
+		$pusher->trigger($this->channel, $this->messageType, $this->messageToSend);
+	}
+
+	private function sendSlanger() {
+
+		$pusher = new Pusher(env('SLANGER_KEY'), env('SLANGER_SECRET'), env('SLANGER_APP_ID'), [], env('SLANGER_APP_HOST'), 4567);
+
+		$pusher->trigger($this->channel, $this->messageType, $this->messageToSend);
 	}
 }
