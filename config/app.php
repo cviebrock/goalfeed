@@ -169,6 +169,7 @@ return [
          */
         //
 	    Bugsnag\BugsnagLaravel\BugsnagServiceProvider::class,
+	    TwigBridge\ServiceProvider::class,
 
 
 	    /*

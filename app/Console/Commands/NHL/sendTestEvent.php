@@ -43,7 +43,5 @@ class sendTestEvent extends Command
         //
 		$message = new Message('wpg');
 	    dispatch(new MessageSender($message));
-
-
     }
 }

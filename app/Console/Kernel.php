@@ -40,6 +40,8 @@ class Kernel extends ConsoleKernel
 
 		$schedule->command('nhl:rescue-games')->everyFiveMinutes();
 
+	    $schedule->command('nhl:get-games')
+		    ->daily();
 
     }
 
