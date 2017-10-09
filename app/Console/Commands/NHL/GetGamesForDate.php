@@ -76,8 +76,8 @@ class GetGamesForDate extends Command {
 					foreach ($scoreboard->dates[0]->games as $game) {
 
 						//die();
-						$homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name))]);
-						$awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name))]);
+						$homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name)), 'league_id' => $nhl->id]);
+						$awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name)), 'league_id' => $nhl->id]);
 
 						$startTime = Carbon::parse($game->gameDate);
 						$curGame = Game::firstOrCreate(['game_code' => $game->gamePk, 'start_time' => $startTime->timestamp, 'league_id' => $nhl->id]);
