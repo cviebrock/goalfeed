@@ -16,11 +16,16 @@ class TeamService extends BaseService {
 
 		return false;
 	}
+
 	public static function assignTeamsToGame(Game $game, array $teams) {
 		foreach ($teams as $team){
 			if(!self::isTeamAssignedToGame($team, $game)){
 				$team->games()->save($game);
 			}
 		}
+	}
+
+	public static function sendGoal(Team $team) {
+
 	}
 }

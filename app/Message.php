@@ -13,13 +13,14 @@ class Message
 	const MESSAGE_TYPE_GOAL = 'goal';
 
 
-	public function __construct($team = null) {
+	public function __construct(Team $team = null) {
 		if(!$team){
 			$team = 'WPG';
 		}
 
 		$this->channelId  = 'goals';
 		$this->messageType = self::MESSAGE_TYPE_GOAL;
+
 		$this->payload = $team;
 
 	}
@@ -41,7 +42,8 @@ class Message
 	public function toMessageJson(){
 
 		$message = [
-			'team' => $this->payload
+			'team' => $this->payload->team_code,
+			'league' => $this->payload->league_id
 		];
 
 		return json_encode($message);

@@ -20,6 +20,7 @@ class CreateLeagues extends Migration
 		    $table->text('long_name');
 	    });
 
+
 	    Schema::table('games', function (Blueprint $table) {
 		    $table->integer('league_id');
 	    });
@@ -27,9 +28,19 @@ class CreateLeagues extends Migration
 	    Schema::table('teams', function (Blueprint $table) {
 		    $table->integer('league_id');
 	    });
+
 	    DB::table('leagues')->insert(['id'=>1,'short_name'=>'NHL','long_name' => 'National Hockey League']);
 	    DB::table('games')->update(['league_id'=>1]);
 	    DB::table('teams')->update(['league_id'=>1]);
+
+	    Schema::table('games', function (Blueprint $table) {
+		    $table->dropUnique('games_game_code_unique');
+		    $table->unique(['game_code', 'league_id']);
+	    });
+	    Schema::table('teams', function (Blueprint $table) {
+		    $table->string('team_code',6)->change();
+		    $table->unique(['team_code', 'league_id']);
+	    });
     }
 
 

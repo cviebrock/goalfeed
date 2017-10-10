@@ -7,6 +7,7 @@ use App\League;
 use App\Team;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
+use App\Services\TeamService;
 use Curl;
 use App\EngineMiscFunctions;
 use Symfony\Component\Console\Helper\ProgressBar;
@@ -45,8 +46,7 @@ class GetGamesForDate extends Command
     public function handle()
     {
         //
-		$mlb = League::whereShortName('MLB')->first();
-
+	    $mlb = League::firstOrCreate(['short_name' => 'MLB', 'long_name' => 'Major League Baseball']);
 	    var_dump($mlb);
 
 		$days = $this->argument("days") ? $this->argument("days") : 7;
@@ -62,7 +62,8 @@ class GetGamesForDate extends Command
 
 	    while($daysProcessed < $days){
 
-		    $scoreboardURL = "http://gd2.mlb.com/components/game/mlb/year_" . $date->format('Y') . "/month_" . $date->format('m') . "/day_" . $date->format('d') . "/master_scoreboard.json";
+		    $scoreboardURL = "https://statsapi.mlb.com/api/v1/schedule?sportId=1&startDate=" . $date->format('Y-n-d') . "&endDate=" . $date->format('Y-n-d') . "&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.metadata&leaderCategories=&leaderGameTypes=R&teamId=&gameType=&timecode=";
+		    //$scoreboardURL = "http://gd2.mlb.com/components/game/mlb/year_" . $date->format('Y') . "/month_" . $date->format('m') . "/day_" . $date->format('d') . "/master_scoreboard.json";
 			$this->output->writeln($scoreboardURL);
 		    $response = Curl::to($scoreboardURL)->get();
 
@@ -72,17 +73,16 @@ class GetGamesForDate extends Command
 			    $scoreboard = json_decode($response, false);
 
 			    var_dump($scoreboard);
-			    foreach ($scoreboard->games as $game){
-				    $homeTeam = Team::firstOrCreate(['team_code' => $game->hta, 'team_name' => ucwords(strtolower($game->htn . ' ' . $game->htcommon)), 'league_id' => $mlb->id]);
-				    $awayTeam = Team::firstOrCreate(['team_code' => $game->ata, 'team_name' => ucwords(strtolower($game->atn . ' ' . $game->atcommon)), 'league_id' => $mlb->id]);
+			    foreach ($scoreboard->dates[0]->games as $game) {
+				    $homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name)), 'league_id' => $mlb->id]);
+				    $awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name)), 'league_id' => $mlb->id]);
 
-				    $startTime = $date;
-				    $startTime->setTimeFromTimeString(date("G:i", strtotime($game->bs)));
+				    $startTime = Carbon::parse($game->gameDate);
 
-				    $curGame = Game::firstOrCreate(['game_code' => $game->id,'start_time' => $startTime->timestamp, 'league_id' => $mlb->id]);
+				    $curGame = Game::firstOrCreate(['game_code' => $game->gamePk, 'start_time' => $startTime->timestamp, 'league_id' => $mlb->id]);
 
-				    $homeTeam->games()->save($curGame);
-				    $awayTeam->games()->save($curGame);
+				    TeamService::assignTeamsToGame($curGame,[$homeTeam, $awayTeam]);
+
 			    }
 		    }
 		    $date->addDay();

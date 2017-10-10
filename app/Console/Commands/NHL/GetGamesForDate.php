@@ -46,7 +46,7 @@ class GetGamesForDate extends Command {
     public function handle()
     {
         //
-		$nhl = League::whereShortName('NHL')->first();
+	    $nhl = League::firstOrCreate(['short_name' => 'NHL', 'long_name' => 'National Hockey League']);
 	    var_dump($nhl);
 
 	    $days = $this->argument("days") ? $this->argument("days") : 7;
