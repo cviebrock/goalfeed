@@ -2,13 +2,14 @@
 
 namespace App\Console\Commands;
 
-use App\Events\Goal;
 use App\Jobs\MessageSender;
 use App\Message;
 use Illuminate\Console\Command;
 
+
 class sendTestEvent extends Command
 {
+
     /**
      * The name and signature of the console command.
      *
@@ -41,7 +42,7 @@ class sendTestEvent extends Command
     public function handle()
     {
         //
-		$message = new Message('wpg');
-	    dispatch(new MessageSender($message));
+        $message = new Message('wpg');
+        dispatch(new MessageSender($message));
     }
 }

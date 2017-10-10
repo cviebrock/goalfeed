@@ -4,47 +4,49 @@ namespace App;
 
 class Message
 {
-	//
-	public $channelId;
 
-	public $messageType;
-	public $payload;
+    //
+    public $channelId;
 
-	const MESSAGE_TYPE_GOAL = 'goal';
+    public $messageType;
 
+    public $payload;
 
-	public function __construct($team = null) {
-		if(!$team){
-			$team = 'WPG';
-		}
+    const MESSAGE_TYPE_GOAL = 'goal';
 
-		$this->channelId  = 'goals';
-		$this->messageType = self::MESSAGE_TYPE_GOAL;
-		$this->payload = $team;
+    public function __construct($team = null)
+    {
+        if (!$team) {
+            $team = 'WPG';
+        }
 
-	}
+        $this->channelId = 'goals';
+        $this->messageType = self::MESSAGE_TYPE_GOAL;
+        $this->payload = $team;
+    }
 
-	public function isSendable(){
-		$sendable = true;
+    public function isSendable()
+    {
+        $sendable = true;
 
-		if(!$this->payload){
-			$sendable = false;
-		}
+        if (!$this->payload) {
+            $sendable = false;
+        }
 
-		if(!$this->messageType){
-			$sendable = false;
-		}
+        if (!$this->messageType) {
+            $sendable = false;
+        }
 
-		return $sendable;
-	}
+        return $sendable;
+    }
 
-	public function toMessageJson(){
+    public function toMessageJson()
+    {
+        $message = [
+            'team' => $this->payload,
+        ];
 
-		$message = [
-			'team' => $this->payload
-		];
-
-		return json_encode($message);
-	}
+        return json_encode($message);
+    }
 
 }

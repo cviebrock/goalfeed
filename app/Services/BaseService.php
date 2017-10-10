@@ -1,9 +1,12 @@
 <?php
+
 namespace App\Services;
 
-class BaseService {
+class BaseService
+{
 
-	public function __construct() {
+    public function __construct()
+    {
 
-	}
+    }
 }

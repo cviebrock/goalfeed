@@ -1,7 +1,8 @@
 <?php
+
 namespace App\Services;
 
-
-class GameService extends BaseService {
+class GameService extends BaseService
+{
 
 }

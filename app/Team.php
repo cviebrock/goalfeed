@@ -4,6 +4,7 @@ namespace App;
 
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
  * App\Team
  *
@@ -20,15 +21,16 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Team extends Model
 {
-	public $timestamps = false;
 
-	protected $fillable = ['team_code', 'team_name'];
+    public $timestamps = false;
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function games()
-	{
-		return $this->belongsToMany('App\Game', 'game_team', 'team_id', 'game_id');
-	}
+    protected $fillable = ['team_code', 'team_name'];
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function games()
+    {
+        return $this->belongsToMany('App\Game', 'game_team', 'team_id', 'game_id');
+    }
 }

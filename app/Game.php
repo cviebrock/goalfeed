@@ -5,6 +5,7 @@ namespace App;
 use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
+
 /**
  * App\Game
  *
@@ -27,30 +28,29 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Game extends Model
 {
-	const GAME_LISTENER_STATUS_IDLE = 'idle';
-	const GAME_LISTENER_STATUS_WAITING = 'waiting';
-	const GAME_LISTENER_STATUS_ACTIVE = 'active';
-	const GAME_LISTENER_STATUS_DONE = 'done';
-	//
-	protected $fillable = ['game_code','start_time'];
 
+    const GAME_LISTENER_STATUS_IDLE = 'idle';
+    const GAME_LISTENER_STATUS_WAITING = 'waiting';
+    const GAME_LISTENER_STATUS_ACTIVE = 'active';
+    const GAME_LISTENER_STATUS_DONE = 'done';
 
-	/**
-	 * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
-	 */
-	public function teams()
-	{
-		return $this->belongsToMany('App\Team','game_team','game_id','team_id');
-	}
+    //
+    protected $fillable = ['game_code', 'start_time'];
 
-	public function readableStartTime($locale = 'America/Winnipeg') {
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
+     */
+    public function teams()
+    {
+        return $this->belongsToMany('App\Team', 'game_team', 'game_id', 'team_id');
+    }
 
-		$startTime = Carbon::createFromTimestampUTC($this->start_time);
+    public function readableStartTime($locale = 'America/Winnipeg')
+    {
+        $startTime = Carbon::createFromTimestampUTC($this->start_time);
 
-		$startTime->setTimezone($locale);
+        $startTime->setTimezone($locale);
 
-		return $startTime->toDateTimeString();
-
-
-	}
+        return $startTime->toDateTimeString();
+    }
 }

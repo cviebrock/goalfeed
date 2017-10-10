@@ -6,87 +6,98 @@ use App\Game;
 use App\Services\TeamService;
 use App\Team;
 use Carbon\Carbon;
-use Illuminate\Console\Command;
 use Curl;
-use App\EngineMiscFunctions;
+use Illuminate\Console\Command;
 use Symfony\Component\Console\Helper\ProgressBar;
 
-class GetGamesForDate extends Command {
 
-	/**
-	 * The name and signature of the console command.
-	 *
-	 * @var string
-	 */
-	protected $signature = 'nhl:get-games {days?} {offset?}';
+class GetGamesForDate extends Command
+{
 
-	/**
-	 * The console command description.
-	 *
-	 * @var string
-	 */
-	protected $description = 'Gets games for the specified dates';
+    /**
+     * The name and signature of the console command.
+     *
+     * @var string
+     */
+    protected $signature = 'nhl:get-games {days?} {offset?}';
 
-	/**
-	 * Create a new command instance.
-	 *
-	 * @return void
-	 */
-	public function __construct() {
+    /**
+     * The console command description.
+     *
+     * @var string
+     */
+    protected $description = 'Gets games for the specified dates';
 
-		parent::__construct();
-	}
+    /**
+     * Create a new command instance.
+     *
+     * @return void
+     */
+    public function __construct()
+    {
 
-	/**
-	 * Execute the console command.
-	 *
-	 * @return mixed
-	 */
-	public function handle() {
+        parent::__construct();
+    }
 
-		//
+    /**
+     * Execute the console command.
+     *
+     * @return mixed
+     */
+    public function handle()
+    {
 
-		$days = $this->argument("days") ? $this->argument("days") : 7;
-		$offset = $this->argument("offset") ? $this->argument("offset") : 0;
+        //
 
-		$urlRoot = "https://statsapi.web.nhl.com";
+        $days = $this->argument("days") ? $this->argument("days") : 7;
+        $offset = $this->argument("offset") ? $this->argument("offset") : 0;
 
-		$date = Carbon::today();
-		$date->addDays($offset);
-		$date->timezone('America/Toronto');
-		$daysProcessed = 0;
+        $urlRoot = "https://statsapi.web.nhl.com";
 
-		$progress = new ProgressBar($this->output);
-		$progress->start($days);
+        $date = Carbon::today();
+        $date->addDays($offset);
+        $date->timezone('America/Toronto');
+        $daysProcessed = 0;
 
-		while ($daysProcessed < $days) {
-			$scoreboardURL = $urlRoot . "/api/v1/schedule?startDate=" . $date->format('Y-n-d') . "&endDate=" . $date->format('Y-n-d') . "&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.ticket,schedule.game.content.media.epg,schedule.radioBroadcasts,schedule.metadata,schedule.game.seriesSummary,seriesSummary.series&leaderCategories=&leaderGameTypes=R&site=en_nhlCA&teamId=&gameType=&timecode=";
-			$this->output->writeln($scoreboardURL);
-			$response = Curl::to($scoreboardURL)->get();
+        $progress = new ProgressBar($this->output);
+        $progress->start($days);
 
-			if ($response) {
+        while ($daysProcessed < $days) {
+            $scoreboardURL = $urlRoot . "/api/v1/schedule?startDate=" . $date->format('Y-n-d') . "&endDate=" . $date->format('Y-n-d') . "&expand=schedule.teams,schedule.linescore,schedule.broadcasts.all,schedule.ticket,schedule.game.content.media.epg,schedule.radioBroadcasts,schedule.metadata,schedule.game.seriesSummary,seriesSummary.series&leaderCategories=&leaderGameTypes=R&site=en_nhlCA&teamId=&gameType=&timecode=";
+            $this->output->writeln($scoreboardURL);
+            $response = Curl::to($scoreboardURL)->get();
 
-				$scoreboard = json_decode($response, false);
-				//var_dump($scoreboard);
-				if (!empty($scoreboard->dates)) {
+            if ($response) {
 
-					foreach ($scoreboard->dates[0]->games as $game) {
+                $scoreboard = json_decode($response, false);
+                //var_dump($scoreboard);
+                if (!empty($scoreboard->dates)) {
 
-						//die();
-						$homeTeam = Team::firstOrCreate(['team_code' => $game->teams->home->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->home->team->name))]);
-						$awayTeam = Team::firstOrCreate(['team_code' => $game->teams->away->team->abbreviation, 'team_name' => ucwords(strtolower($game->teams->away->team->name))]);
+                    foreach ($scoreboard->dates[0]->games as $game) {
 
-						$startTime = Carbon::parse($game->gameDate);
-						$curGame = Game::firstOrCreate(['game_code' => $game->gamePk, 'start_time' => $startTime->timestamp]);
+                        //die();
+                        $homeTeam = Team::firstOrCreate([
+                            'team_code' => $game->teams->home->team->abbreviation,
+                            'team_name' => ucwords(strtolower($game->teams->home->team->name)),
+                        ]);
+                        $awayTeam = Team::firstOrCreate([
+                            'team_code' => $game->teams->away->team->abbreviation,
+                            'team_name' => ucwords(strtolower($game->teams->away->team->name)),
+                        ]);
 
-						TeamService::assignTeamsToGame($curGame,[$homeTeam, $awayTeam]);
-					}
+                        $startTime = Carbon::parse($game->gameDate);
+                        $curGame = Game::firstOrCreate([
+                            'game_code' => $game->gamePk,
+                            'start_time' => $startTime->timestamp,
+                        ]);
 
-				}
-			}
-			$date->addDay();
-			$daysProcessed++;
-			$progress->advance();
-		}
-	}
+                        TeamService::assignTeamsToGame($curGame, [$homeTeam, $awayTeam]);
+                    }
+                }
+            }
+            $date->addDay();
+            $daysProcessed++;
+            $progress->advance();
+        }
+    }
 }

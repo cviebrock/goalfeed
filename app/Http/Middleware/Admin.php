@@ -2,24 +2,28 @@
 
 namespace App\Http\Middleware;
 
-use Closure;
 use Auth;
+use Closure;
 
-class Admin {
 
-	/**
-	 * Handle an incoming request.
-	 *
-	 * @param  \Illuminate\Http\Request $request
-	 * @param  \Closure $next
-	 * @return mixed
-	 */
-	public function handle($request, Closure $next) {
+class Admin
+{
 
-		if (Auth::check() && Auth::user()->isAdmin()) {
-			return $next($request);
-		}
+    /**
+     * Handle an incoming request.
+     *
+     * @param  \Illuminate\Http\Request $request
+     * @param  \Closure $next
+     *
+     * @return mixed
+     */
+    public function handle($request, Closure $next)
+    {
 
-		return redirect('/');
-	}
+        if (Auth::check() && Auth::user()->isAdmin()) {
+            return $next($request);
+        }
+
+        return redirect('/');
+    }
 }

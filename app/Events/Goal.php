@@ -3,14 +3,16 @@
 namespace App\Events;
 
 use Illuminate\Broadcasting\Channel;
-use Illuminate\Queue\SerializesModels;
-use Illuminate\Broadcasting\PrivateChannel;
-use Illuminate\Broadcasting\PresenceChannel;
 use Illuminate\Broadcasting\InteractsWithSockets;
+use Illuminate\Broadcasting\PresenceChannel;
+use Illuminate\Broadcasting\PrivateChannel;
 use Illuminate\Contracts\Broadcasting\ShouldBroadcast;
+use Illuminate\Queue\SerializesModels;
+
 
 class Goal
 {
+
     use InteractsWithSockets, SerializesModels;
 
     /**
@@ -18,12 +20,10 @@ class Goal
      *
      * @return void
      */
-	public $team;
+    public $team;
 
-	public function __construct()
+    public function __construct()
     {
-        //
-
     }
 
     /**
@@ -32,8 +32,8 @@ class Goal
      * @return Channel|array
      */
 
-	public function broadcastOn()
-	{
-		return new Channel('goals');
-	}
+    public function broadcastOn()
+    {
+        return new Channel('goals');
+    }
 }
