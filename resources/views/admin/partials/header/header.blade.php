@@ -20,7 +20,7 @@
 				</span>
             @else
                 <a href="{{ url('/logout') }}"
-                        onclick="event.preventDefault();
+                   onclick="event.preventDefault();
                                                  document.getElementById('logout-form').submit();">
                     Logout
                 </a>
