@@ -43,7 +43,8 @@ class Message
 
 		$message = [
 			'team' => $this->payload->team_code,
-			'league' => $this->payload->league_id
+			'league' => $this->payload->league_id,
+			'team_hash' => $this->payload->team_hash
 		];
 
 		return json_encode($message);

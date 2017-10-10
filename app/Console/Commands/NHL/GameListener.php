@@ -144,7 +144,7 @@ class GameListener extends Command
 
 	    $teamname = $team->team_name;
 	    $this->output->writeln("Goal $teamname");
-	    $message = new Message($team->team_code);
+	    $message = new Message($team);
 	    dispatch(new MessageSender($message));
 
     }

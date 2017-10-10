@@ -18,10 +18,13 @@ use Illuminate\Database\Eloquent\Model;
  * @property integer $league_id
  * @property-read \App\League $league
  * @method static \Illuminate\Database\Query\Builder|\App\Team whereLeagueId($value)
+ * @property-read mixed $team_hash
  */
 class Team extends Model
 {
 	protected $fillable = ['team_code','team_name','league_id'];
+
+	protected $appends = ['team_hash'];
 
 	public $timestamps = false;
 
@@ -36,5 +39,9 @@ class Team extends Model
 
 	public function league(){
 		return $this->hasOne('App\League');
+	}
+
+	public function getTeamHashAttribute() {
+		return md5($this->team_code . $this->league_id);
 	}
 }

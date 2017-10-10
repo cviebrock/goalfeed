@@ -5,6 +5,7 @@ namespace App\Console\Commands\MLB;
 use App\EngineMiscFunctions;
 use App\Game;
 use App\Team;
+use App\League;
 use Carbon\Carbon;
 use Illuminate\Console\Command;
 use Curl;
@@ -56,9 +57,10 @@ class GameListener extends Command
     public function handle()
     {
 	    $this->output->setVerbosity(OutputInterface::VERBOSITY_VERY_VERBOSE);
-
+	    $mlb = League::firstOrCreate(['short_name' => 'MLB', 'long_name' => 'Major League Baseball']);
 	    $this->game = Game::whereGameCode($this->argument("game_code"))->first();
-	    $gameUrl = 'http://gd2.mlb.com/components/game/mlb/' . $this->game->game_code . '/gc/gcsb.jsonp';
+
+	    $gameUrl = "http://statsapi.mlb.com/api/v1/game/" . $this->game->game_code . "/feed/live.json";
 		$gameActive = false;
 
 	    $this->game->listener_status = Game::GAME_LISTENER_STATUS_WAITING;
@@ -84,22 +86,25 @@ class GameListener extends Command
 				$response = Curl::to($gameUrl)->get();
 
 				if ($response) {
-					$scoreboard = EngineMiscFunctions::jsonp_decode($response);
+					$scoreboard = json_decode($response);
 
 					if ($scoreboard) {
 						if ($this->homeTeamGoals === false || $this->awayTeamGoals === false) {
-							$this->homeTeam = Team::whereTeamCode($scoreboard->h->ab)->first();
-							$this->awayTeam = Team::whereTeamCode($scoreboard->a->ab)->first();
+							$this->homeTeam = Team::whereTeamCode($scoreboard->gameData->teams->home->name->abbrev)
+								->whereLeagueId($mlb->id)->first();
+							$this->awayTeam = Team::whereTeamCode($scoreboard->gameData->teams->away->name->abbrev)
+								->whereLeagueId($mlb->id)->first();
 
 							$this->output->writeln("Game started");
-							$this->homeTeamGoals = $scoreboard->h->tot->g;
-							$this->awayTeamGoals = $scoreboard->a->tot->g;
+							$this->homeTeamGoals = $scoreboard->liveData->linescore->home->runs;
+							$this->awayTeamGoals = $scoreboard->liveData->linescore->away->runs;
 						}
 
 						$this->checkForGoals($scoreboard);
 
-						if ($scoreboard->p > 2 && $scoreboard->sr == 0) {
-							$gameActive = $this->checkGameOver();
+						if ($scoreboard->gameData->status->statusCode == "F") {
+							$this->output->writeln("Game over");
+							return true;
 						}
 						sleep(1);
 					}
@@ -118,14 +123,14 @@ class GameListener extends Command
     public function checkForGoals($scoreboard){
     	
 		if($scoreboard) {
-			if ($scoreboard->h->tot->g > $this->homeTeamGoals) {
+			if ($scoreboard->liveData->linescore->home->runs > $this->homeTeamGoals) {
 				$this->goal($this->homeTeam);
-				$this->homeTeamGoals = $scoreboard->h->tot->g;
+				$this->homeTeamGoals = $scoreboard->liveData->linescore->home->runs;
 			}
 
-			if ($scoreboard->a->tot->g > $this->awayTeamGoals) {
+			if ($scoreboard->liveData->linescore->away->runs > $this->awayTeamGoals) {
 				$this->goal($this->awayTeam);
-				$this->awayTeamGoals = $scoreboard->a->tot->g;
+				$this->awayTeamGoals = $scoreboard->liveData->linescore->away->runs;
 			}
 		}
     }
@@ -137,28 +142,5 @@ class GameListener extends Command
 	    $message = new Message($team);
 	    dispatch(new MessageSender($message));
 
-    }
-
-    public function checkGameOver() {
-
-	    $scoreboardURL = "http://live.mlbe.com/GameData/GCScoreboard/" . $this->date->toDateString() .".jsonp";
-
-	    $response = Curl::to($scoreboardURL)->get();
-
-	    if($response) {
-
-		    $scoreboard = EngineMiscFunctions::jsonp_decode($response, false);
-
-		    if($scoreboard){
-				foreach ($scoreboard->games as $chkGame) {
-					if($chkGame->id == $this->game->game_code && str_contains(strtolower($chkGame->bsc),'final')){
-						$this->output->writeln("Game over");
-						return true;
-					}
-				}
-			}
-	    }
-
-	    return false;
     }
 }
